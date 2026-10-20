@@ -39,7 +39,8 @@ function renderSeries() {
   const counts = multiGroup()
     ? groups.map(g => `${g || '其他'} ${series.volumes.filter(v => v.group === g).length}`).join('、')
     : `共 ${series.volumes.length} 冊`;
-  $('seriesMeta').textContent = [series.author, site.name, counts].filter(Boolean).join(' · ');
+  $('authorInput').value = data.author;
+  $('seriesMeta').textContent = `${site.name} · ${counts}`;
   if (series.cover) {
     $('cover').src = series.cover;
     $('cover').hidden = false;
@@ -167,7 +168,7 @@ function refresh() {
     tab.querySelector('.count').textContent = picked ? `${picked}／${inGroup.length}` : String(inGroup.length);
   }
 
-  for (const id of ['btnAll', 'btnNone', 'btnNew', 'btnRange', 'rangeInput', 'optSplit', 'optGray']) $(id).disabled = locked;
+  for (const id of ['btnAll', 'btnNone', 'btnNew', 'btnRange', 'rangeInput', 'authorInput', 'optSplit', 'optGray']) $(id).disabled = locked;
   document.querySelectorAll('input[name=direction]').forEach(r => { r.disabled = locked; });
 
   $('busyNote').hidden = !busyElsewhere();
@@ -240,6 +241,7 @@ async function start() {
       type: 'startJob',
       seriesUrl,
       series: data.series,
+      author: $('authorInput').value.trim(),
       volumeUrls: data.series.volumes.filter(v => selected.has(v.url)).map(v => v.url),
       direction: document.querySelector('input[name=direction]:checked').value,
       settings: { splitSpreads: $('optSplit').checked, grayscale: $('optGray').checked },

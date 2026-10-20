@@ -23,7 +23,7 @@
     /**
      * @param {object} opts
      * @param {string} opts.title   PDF 書名（Kindle 書庫會顯示）
-     * @param {string} opts.author
+     * @param {string} opts.author  作者（Kindle 書庫會顯示）；空字串時不寫入
      * @param {boolean} opts.rtl         右翻漫畫：寫入 /Direction /R2L
      * @param {number} opts.pageHeight   每頁高度（pt）；所有頁面同高，解析度不同的圖片放大縮小時才一致
      */
@@ -110,7 +110,8 @@
 
       this._beginObject(3);
       this._pushText(
-        `<< /Title ${pdfTextString(this.title)} /Author ${pdfTextString(this.author)} ` +
+        `<< /Title ${pdfTextString(this.title)} ` +
+        (this.author ? `/Author ${pdfTextString(this.author)} ` : '') +
         `/Creator (ComicClipper) /Producer (ComicClipper) /CreationDate (${pdfDate(new Date())}) >>\nendobj\n`
       );
 
