@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ComicClipper 下載</title>
+  <link rel="stylesheet" href="downloader.css">
+</head>
+<body>
+  <header class="topbar">
+    <img src="../icons/icon48.png" alt="" class="logo">
+    <h1>ComicClipper</h1>
+  </header>
+
+  <main>
+    <div id="loading" class="notice">讀取作品頁…</div>
+    <div id="loadError" class="notice notice-error" hidden></div>
+
+    <div id="app" hidden>
+      <section class="series">
+        <img id="cover" class="cover" alt="" hidden>
+        <div class="series-info">
+          <h2 id="seriesTitle"></h2>
+          <div id="seriesMeta" class="muted"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="toolbar">
+          <button id="btnAll" class="btn btn-small">全選</button>
+          <button id="btnNone" class="btn btn-small">全不選</button>
+          <button id="btnNew" class="btn btn-small">選未下載</button>
+          <span class="spacer"></span>
+          <label class="range">
+            範圍
+            <input id="rangeInput" type="text" placeholder="例如 1-5, 8, 12-15">
+          </label>
+          <button id="btnRange" class="btn btn-small">套用</button>
+        </div>
+        <div id="rangeError" class="field-error" hidden></div>
+
+        <div class="options">
+          <fieldset>
+            <legend>翻頁方向</legend>
+            <label><input type="radio" name="direction" value="rtl"> 右翻（日漫）</label>
+            <label><input type="radio" name="direction" value="ltr"> 左翻</label>
+          </fieldset>
+          <label><input id="optSplit" type="checkbox"> 橫向跨頁拆成兩頁</label>
+          <label><input id="optGray" type="checkbox"> 轉灰階 <span class="muted">（檔案較小，但每張圖都要重新壓縮）</span></label>
+          <div id="deviceNote" class="muted"></div>
+        </div>
+      </section>
+
+      <div id="busyNote" class="notice" hidden></div>
+
+      <ul id="volumeList" class="volumes"></ul>
+
+      <p class="hint">
+        每冊存成一個 PDF，放在「下載／ComicClipper／作品名」資料夾。
+        再用 <a href="https://www.amazon.com/sendtokindle" target="_blank" rel="noopener">Send to Kindle</a>
+        網頁版上傳到 Kindle（單檔上限 200MB）；上傳時不要選擇轉換格式。
+      </p>
+    </div>
+  </main>
+
+  <footer id="footer" class="footer" hidden>
+    <span id="summary" class="muted"></span>
+    <button id="btnCancel" class="btn btn-secondary" hidden>取消</button>
+    <button id="btnStart" class="btn btn-primary">開始下載</button>
+  </footer>
+
+  <script src="../lib/util.js"></script>
+  <script src="downloader.js"></script>
+</body>
+</html>

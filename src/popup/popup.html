@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>ComicClipper</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="header">
+    <img src="../icons/icon48.png" alt="" class="logo">
+    <div class="header-text">
+      <h1>ComicClipper</h1>
+      <p>整冊漫畫下載成 PDF，傳到 Kindle 閱讀</p>
+    </div>
+  </div>
+
+  <div class="content">
+    <div id="jobBox" class="card" hidden>
+      <div class="card-title">下載進行中</div>
+      <div id="jobText" class="muted"></div>
+      <button id="btnShowJob" class="btn btn-secondary">查看下載進度</button>
+    </div>
+
+    <div id="supportedBox" class="card" hidden>
+      <div class="card-title" id="siteName"></div>
+      <p class="muted">在作品頁開啟下載頁，選擇要下載的冊數。</p>
+      <button id="btnOpen" class="btn btn-primary">開啟下載頁</button>
+    </div>
+
+    <div id="unsupportedBox" class="card" hidden>
+      <div class="card-title">這個網站還沒有支援</div>
+      <p class="muted">目前支援：<span id="siteList"></span></p>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
