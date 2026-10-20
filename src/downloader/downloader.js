@@ -10,8 +10,14 @@ let data = null;            // loadSeries 的結果：series、downloaded、sett
 let job = null;             // 背景頁目前的工作（可能是別部作品）
 const selected = new Set(); // 勾選的冊（以網址識別）
 const rows = new Map();     // 網址 → 列表元素
-let lastClicked = -1;       // Shift＋點選用
+let lastClicked = -1;       // Shift＋點選用（目前分頁籤內的位置）
 let updateSeq = 0;          // 收到幾次進度通知
+let groups = [];            // 區名（單行本、單話…）；只有一區時不顯示分頁籤
+let activeGroup = '';
+
+const multiGroup = () => groups.length > 1;
+/** 目前分頁籤裡的冊；選取工具列、範圍與 Shift＋點選都只作用在這些冊 */
+const groupVolumes = () => (multiGroup() ? data.series.volumes.filter(v => v.group === activeGroup) : data.series.volumes);
 
 const ACTIVE = ['waiting', 'listing', 'downloading', 'packing'];
 
@@ -30,7 +36,10 @@ function renderSeries() {
   const { series, site, device } = data;
   document.title = `${series.title} - ComicClipper`;
   $('seriesTitle').textContent = series.title;
-  $('seriesMeta').textContent = [series.author, site.name, `共 ${series.volumes.length} 冊`].filter(Boolean).join(' · ');
+  const counts = multiGroup()
+    ? groups.map(g => `${g || '其他'} ${series.volumes.filter(v => v.group === g).length}`).join('、')
+    : `共 ${series.volumes.length} 冊`;
+  $('seriesMeta').textContent = [series.author, site.name, counts].filter(Boolean).join(' · ');
   if (series.cover) {
     $('cover').src = series.cover;
     $('cover').hidden = false;
@@ -42,20 +51,42 @@ function renderSeries() {
   $('deviceNote').textContent = `輸出尺寸：${device}（圖片只縮小不放大；一般 JPEG 直接放進 PDF，不重新壓縮）`;
 }
 
+function renderGroupTabs() {
+  if (!multiGroup()) return;
+  const nav = $('groupTabs');
+  for (const g of groups) {
+    const btn = document.createElement('button');
+    btn.className = 'group-tab';
+    btn.dataset.group = g;
+    btn.append(g || '其他');
+    const count = document.createElement('span');
+    count.className = 'count';
+    btn.append(count);
+    btn.addEventListener('click', () => {
+      activeGroup = g;
+      lastClicked = -1;
+      $('rangeError').hidden = true;
+      refresh();
+    });
+    nav.append(btn);
+  }
+  nav.hidden = false;
+}
+
 function renderVolumes() {
   const list = $('volumeList');
-  data.series.volumes.forEach((vol, index) => {
+  data.series.volumes.forEach((vol) => {
     const li = document.createElement('li');
     li.className = 'vol';
 
     const box = document.createElement('input');
     box.type = 'checkbox';
-    box.addEventListener('click', (e) => onToggle(index, box.checked, e.shiftKey));
+    box.addEventListener('click', (e) => onToggle(vol, box.checked, e.shiftKey));
 
     const title = document.createElement('span');
     title.className = 'vol-title';
     title.textContent = vol.title;
-    title.addEventListener('click', (e) => { if (!box.disabled) onToggle(index, !box.checked, e.shiftKey); });
+    title.addEventListener('click', (e) => { if (!box.disabled) onToggle(vol, !box.checked, e.shiftKey); });
 
     const badge = document.createElement('span');
     badge.className = 'vol-badge';
@@ -119,6 +150,7 @@ function refresh() {
   for (const vol of data.series.volumes) {
     const row = rows.get(vol.url);
     const isChecked = selected.has(vol.url);
+    row.li.hidden = multiGroup() && vol.group !== activeGroup;
     row.box.checked = isChecked;
     row.box.disabled = locked;
     row.li.classList.toggle('checked', isChecked);
@@ -126,6 +158,13 @@ function refresh() {
     row.badge.textContent = when ? `已下載 ${formatDate(when)}` : '';
     row.badge.hidden = !when;
     renderStatus(row, jobVols.get(vol.url));
+  }
+
+  for (const tab of $('groupTabs').children) {
+    const inGroup = data.series.volumes.filter(v => v.group === tab.dataset.group);
+    const picked = inGroup.filter(v => selected.has(v.url)).length;
+    tab.classList.toggle('active', tab.dataset.group === activeGroup);
+    tab.querySelector('.count').textContent = picked ? `${picked}／${inGroup.length}` : String(inGroup.length);
   }
 
   for (const id of ['btnAll', 'btnNone', 'btnNew', 'btnRange', 'rangeInput', 'optSplit', 'optGray']) $(id).disabled = locked;
@@ -154,8 +193,9 @@ function refresh() {
 
 // ── 選擇 ──────────────────────────────────────────────────
 
-function onToggle(index, checked, shiftKey) {
-  const vols = data.series.volumes;
+function onToggle(vol, checked, shiftKey) {
+  const vols = groupVolumes();
+  const index = vols.indexOf(vol);
   const [from, to] = shiftKey && lastClicked >= 0
     ? [Math.min(lastClicked, index), Math.max(lastClicked, index)]
     : [index, index];
@@ -167,17 +207,21 @@ function onToggle(index, checked, shiftKey) {
   refresh();
 }
 
+/** 重新選取目前分頁籤裡的冊，其他分頁籤的選取不變 */
 function selectWhere(predicate) {
-  selected.clear();
-  data.series.volumes.forEach((v, i) => { if (predicate(v, i)) selected.add(v.url); });
+  groupVolumes().forEach((v, i) => {
+    if (predicate(v, i)) selected.add(v.url);
+    else selected.delete(v.url);
+  });
   refresh();
 }
 
 function applyRange() {
   $('rangeError').hidden = true;
+  const total = groupVolumes().length;
   try {
-    const picked = ComicUtil.parseRange($('rangeInput').value, data.series.volumes.length);
-    if (!picked.length) throw new Error(`沒有符合的冊數（共 ${data.series.volumes.length} 冊）`);
+    const picked = ComicUtil.parseRange($('rangeInput').value, total);
+    if (!picked.length) throw new Error(`沒有符合的冊數（共 ${total} 冊）`);
     const set = new Set(picked);
     selectWhere((_v, i) => set.has(i + 1));
   } catch (e) {
@@ -236,15 +280,20 @@ async function init() {
     send({ type: 'getJob' }),
   ]);
 
+  groups = [...new Set(data.series.volumes.map(v => v.group))];
+  const jobHere = job?.seriesUrl === seriesUrl;
+  activeGroup = jobHere && groups.includes(job.volumes[0]?.group) ? job.volumes[0].group : groups[0];
+
   renderSeries();
+  renderGroupTabs();
   renderVolumes();
 
   if (runningHere()) {
     job.volumes.forEach(v => selected.add(v.url));
-  } else if (tabId == null && job?.seriesUrl === seriesUrl) {
+  } else if (tabId == null && jobHere) {
     job.volumes.filter(v => v.status !== 'done').forEach(v => selected.add(v.url));
-  } else {
-    // 預設勾選還沒下載過的冊
+  } else if (!multiGroup()) {
+    // 預設勾選還沒下載過的冊；分成多區時（例如單行本＋上百話）預設不勾，由使用者挑選
     data.series.volumes.forEach(v => { if (!data.downloaded[v.url]) selected.add(v.url); });
   }
 

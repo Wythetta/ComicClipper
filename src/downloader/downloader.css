@@ -32,6 +32,15 @@ main { max-width: 760px; margin: 0 auto; padding: 16px; display: flex; flex-dire
 .cover { width: 72px; height: 100px; object-fit: cover; border-radius: 6px; background: #1a1a24; }
 .series-info h2 { font-size: 20px; margin-bottom: 4px; }
 
+.group-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.group-tab {
+  background: #1a1a24; color: #c8c8e8; border: 1px solid #2a2a3a; border-radius: 20px;
+  padding: 6px 14px; font-size: 13px; cursor: pointer; transition: all 0.2s;
+}
+.group-tab:hover { border-color: #6c63ff; }
+.group-tab.active { background: linear-gradient(135deg, #6c63ff, #a855f7); color: white; border-color: transparent; }
+.group-tab .count { opacity: 0.75; font-size: 12px; margin-left: 4px; }
+
 .panel {
   background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 8px;
   padding: 12px; display: flex; flex-direction: column; gap: 10px;

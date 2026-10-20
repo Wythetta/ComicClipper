@@ -22,6 +22,7 @@
    - **範圍**：輸入 `1-5, 8, 12-15` 後按「套用」（或 Enter）
    - **Shift＋點選**：一次勾選一整段
    - 下載過的冊會顯示「已下載 日期」，下次打開時預設只勾還沒下載的
+   - 網站把作品分成「單行本／單話／番外篇」等區時，會顯示**分頁籤**；選取工具列、範圍與 Shift＋點選只作用在目前的分頁籤，其他分頁籤的勾選會保留（這類作品預設不勾任何一冊）
 4. 選擇翻頁方向（日漫選「右翻」）與其他選項，按「**開始下載**」
 5. 每冊會依序顯示進度；失敗的冊會顯示原因，下載結束後自動勾選，按一下就能重試
 
@@ -62,8 +63,13 @@ PDF 每頁高度一致、沒有白邊，書名與作者會寫進 PDF 資訊欄�
 | 網站 | 狀態 |
 |---|---|
 | comic.acgn.cc（動漫戲說） | ✅ 可用（頁面結構參考 [ComicCrawler](https://github.com/eight04/ComicCrawler) 的 acgn 模組，MIT 授權） |
+| www／tw.manhuagui.com（漫畫櫃，含鏡像站 mhgui.com） | 🧪 已完成，待實測（解碼方式參考 [Mihon 擴充](https://github.com/keiyoushi/extensions-source) 的 manhuagui，Apache-2.0） |
 
-標題含「暫缺」的冊沒有內容，不會出現在清單中。
+- **動漫戲說**：標題含「暫缺」的冊沒有內容，不會出現在清單中。
+- **漫畫櫃**：
+  - 圖片清單藏在壓縮過的程式碼裡，擴充功能直接解碼，不會執行網站的程式。
+  - 網站會暫時封鎖下載太快的 IP，所以固定最多同時 2 張、每張間隔 0.6 秒。
+  - 成人作品需要先在網站上任選一話打開、按下「已滿 18 歲」確認，才能下載。
 
 ### 新增網站
 
@@ -71,6 +77,8 @@ PDF 每頁高度一致、沒有白邊，書名與作者會寫進 PDF 資訊欄�
 
 - `parseSeries(doc, url)`：從作品頁取出書名、作者、封面與冊數清單
 - `getPages(volume, ctx)`：取出一冊所有圖片的網址（`ctx.fetchDocument` 會自動處理 Big5／GBK 編碼）
+- 選填：冊數加上 `group` 會分頁籤顯示；`limits` 可限制同時下載數與間隔
+- 共用工具：`LZString.decompressFromBase64`、`Unpacker.unpack`（還原 packer 壓縮的程式碼，不執行它）
 
 寫好後把檔案加進 `src/manifest.json` 的 `background.scripts`。
 
@@ -79,7 +87,7 @@ PDF 每頁高度一致、沒有白邊，書名與作者會寫進 PDF 資訊欄�
 ## 🛠️ 開發
 
 ```bash
-node --test 'test/*.test.js'   # 單元測試（範圍解析、檔名、JPEG 解析、PDF 結構）
+node --test 'test/*.test.js'   # 單元測試（範圍解析、檔名、JPEG 解析、PDF 結構、LZString、packer 還原）
 ./build.sh                     # 把 src/ 打包成 firefox-extension.zip
 ```
 

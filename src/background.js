@@ -155,7 +155,7 @@ async function loadSeries({ url, tabId }) {
       title: series.title || '未命名',
       author: series.author || '',
       cover: series.cover || '',
-      volumes: series.volumes.map(v => ({ title: v.title, url: v.url })),
+      volumes: series.volumes.map(v => ({ title: v.title, url: v.url, group: v.group || '' })),
     },
     direction: record.direction || site.direction || 'rtl',
     downloaded: record.downloaded || {},
@@ -256,7 +256,7 @@ async function startJob({ seriesUrl, series, volumeUrls, direction, settings }) 
     title: series.title,
     status: 'running',
     volumes: series.volumes.filter(v => wanted.has(v.url)).map(v => ({
-      url: v.url, title: v.title, status: 'waiting', done: 0, total: 0, error: '', path: '', downloadId: null,
+      url: v.url, title: v.title, group: v.group || '', status: 'waiting', done: 0, total: 0, error: '', path: '', downloadId: null,
     })),
   };
   jobAbort = new AbortController();
@@ -272,8 +272,17 @@ async function runJob(site, series, direction, settings, signal) {
     maxLong: DEVICE.maxLong, maxShort: DEVICE.maxShort,
     splitSpreads: settings.splitSpreads, rtl, grayscale: settings.grayscale, quality: settings.quality,
   };
+  const concurrency = Math.min(settings.concurrency, site.limits?.concurrency ?? Infinity);
+  const delayMs = Math.max(settings.delayMs, site.limits?.delayMs ?? 0);
   const folder = ComicUtil.sanitizeFilename(series.title);
-  const padWidth = Math.max(2, ...series.volumes.map(v => ComicUtil.leadingNumberWidth(v.title)));
+
+  // 數字補零的位數依區分開算（單行本「第01卷」、單話「第001話」）；有多個區時檔名加上區名
+  const padWidths = new Map();
+  for (const v of series.volumes) {
+    const group = v.group || '';
+    padWidths.set(group, Math.max(padWidths.get(group) || 2, ComicUtil.leadingNumberWidth(v.title)));
+  }
+  const multiGroup = padWidths.size > 1;
 
   for (const vol of job.volumes) {
     if (signal.aborted) { vol.status = 'cancelled'; continue; }
@@ -286,7 +295,7 @@ async function runJob(site, series, direction, settings, signal) {
       vol.total = urls.length;
       vol.status = 'downloading';
       notify(true);
-      const pages = await mapPool(urls, settings.concurrency, signal, async (imgUrl, i) => {
+      const pages = await mapPool(urls, concurrency, signal, async (imgUrl, i) => {
         let buffer;
         try {
           ({ buffer } = await ComicUtil.withRetry(
@@ -302,13 +311,15 @@ async function runJob(site, series, direction, settings, signal) {
         }
         vol.done++;
         notify();
-        if (settings.delayMs) await ComicUtil.sleep(settings.delayMs);
+        if (delayMs) await ComicUtil.sleep(delayMs);
         return result;
       });
 
       vol.status = 'packing';
       notify(true);
-      const bookTitle = `${series.title} ${ComicUtil.padVolumeNumber(vol.title, padWidth)}`;
+      const volTitle = ComicUtil.padVolumeNumber(vol.title, padWidths.get(vol.group) || 2);
+      const bookTitle = [series.title, multiGroup && !vol.title.includes(vol.group) ? vol.group : '', volTitle]
+        .filter(Boolean).join(' ');
       const pdf = new PDFWriter({ title: bookTitle, author: series.author, rtl });
       for (const page of pages.flat()) pdf.addJpegPage(page);
       const saved = await saveBlob(pdf.toBlob(), `ComicClipper/${folder}/${ComicUtil.sanitizeFilename(bookTitle)}.pdf`);

@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "ComicClipper",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "批次下載漫畫網站的整冊圖片，每冊轉成一個 PDF，用 Send to Kindle 傳到 Kindle Scribe 閱讀。",
   "browser_specific_settings": {
     "gecko": {
@@ -35,8 +35,11 @@
       "lib/util.js",
       "lib/pdf-writer.js",
       "lib/image-pipeline.js",
+      "lib/lz-string.js",
+      "lib/unpacker.js",
       "sites/registry.js",
       "sites/acgn.js",
+      "sites/manhuagui.js",
       "background.js"
     ]
   },

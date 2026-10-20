@@ -1,0 +1,18 @@
+{
+ "bid": 1759,
+ "bname": "測試'漫畫",
+ "cid": 100001,
+ "cname": "第01卷",
+ "len": 3,
+ "files": [
+  "001.jpg.webp",
+  "002.jpg.webp",
+  "003.png.webp"
+ ],
+ "path": "/ps3/t/test/第01卷/",
+ "note": "a \"quoted\" word \\ backslash",
+ "sl": {
+  "e": 1760000000,
+  "m": "aBcD-123_xyz"
+ }
+}
