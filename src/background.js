@@ -172,7 +172,7 @@ let job = null;
 let jobAbort = null;
 let notifyTimer = null;
 
-browser.browserAction.setBadgeBackgroundColor({ color: '#6c63ff' });
+browser.browserAction.setBadgeBackgroundColor({ color: '#ef6c00' });
 
 function notify(immediate = false) {
   if (notifyTimer && !immediate) return;
