@@ -1,0 +1,26 @@
+[
+ {
+  "input": "hello world",
+  "base64": "BYUwNmD2AEDukCcwBMg="
+ },
+ {
+  "input": "單行本|單話|番外篇",
+  "base64": "nWqhkIw05gPsiOURhWroNE1Dj3kA"
+ },
+ {
+  "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "base64": "IY18ZXTt/DFOS1b0c17Pd/wYWEA="
+ },
+ {
+  "input": "{\"files\":[\"001.jpg.webp\"],\"path\":\"/ps3/x/\"}",
+  "base64": "N4IgZglgNgpgziAXAbRABjQRgHQCsAOA5tgO4wBG+IAugDQj4CGALgBZIgD0+cAzJwA9OIAL5A=="
+ },
+ {
+  "input": "😀 emoji and 中文 mixed abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|abc|",
+  "base64": "rwbgA9gECmC2D2BWBLMBDAdgEzIWjlDhpmKCAHhJsgEYDGAPudbTZQ3Y/ay+8509217zxwF9B/USPHCuQA=="
+ },
+ {
+  "input": "",
+  "base64": "Q==="
+ }
+]
