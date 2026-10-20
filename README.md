@@ -61,7 +61,7 @@ PDF 每頁高度一致、沒有白邊，書名與作者會寫進 PDF 資訊欄�
 
 | 網站 | 狀態 |
 |---|---|
-| comic.acgn.cc（動漫戲說） | 🧪 已完成，待實測：頁面結構參考 [ComicCrawler](https://github.com/eight04/ComicCrawler) 的 acgn 模組（MIT），尚未在真實網站上確認 |
+| comic.acgn.cc（動漫戲說） | ✅ 可用（頁面結構參考 [ComicCrawler](https://github.com/eight04/ComicCrawler) 的 acgn 模組，MIT 授權） |
 
 標題含「暫缺」的冊沒有內容，不會出現在清單中。
 
