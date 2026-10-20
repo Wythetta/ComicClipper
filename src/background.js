@@ -157,6 +157,7 @@ async function loadSeries({ url, tabId }) {
       cover: series.cover || '',
       volumes: series.volumes.map(v => ({ title: v.title, url: v.url, group: v.group || '' })),
     },
+    author: record.author ?? (series.author || ''),   // 使用者在下載頁改過的作者優先
     direction: record.direction || site.direction || 'rtl',
     downloaded: record.downloaded || {},
     settings: await getSettings(),
@@ -241,14 +242,21 @@ async function saveBlob(blob, filename) {
   }
 }
 
-async function startJob({ seriesUrl, series, volumeUrls, direction, settings }) {
+async function startJob({ seriesUrl, series, author, volumeUrls, direction, settings }) {
   if (job?.status === 'running') throw new Error('已有下載工作進行中，請等它完成或取消');
   const site = ComicSites.find(seriesUrl);
   if (!site) throw new Error('這個網站還沒有支援');
 
   const merged = { ...(await getSettings()), ...settings };
   await browser.storage.local.set({ settings: merged });
-  await updateSeriesRecord(seriesUrl, r => ({ ...r, direction }));
+  // 作者只在和網站上的不同時記住，網站的作者資料更新時才會跟著變
+  author = String(author ?? series.author ?? '').trim();
+  await updateSeriesRecord(seriesUrl, (r) => {
+    const next = { ...r, direction };
+    if (author === (series.author || '')) delete next.author;
+    else next.author = author;
+    return next;
+  });
 
   const wanted = new Set(volumeUrls);
   job = {
@@ -260,7 +268,7 @@ async function startJob({ seriesUrl, series, volumeUrls, direction, settings }) 
     })),
   };
   jobAbort = new AbortController();
-  runJob(site, series, direction, merged, jobAbort.signal).catch(e => console.error('ComicClipper job error', e));
+  runJob(site, { ...series, author }, direction, merged, jobAbort.signal).catch(e => console.error('ComicClipper job error', e));
   notify(true);
   return job;
 }

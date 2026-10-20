@@ -21,8 +21,8 @@ test('readJpegInfo 讀出尺寸、色版與編碼方式', () => {
   assert.equal(readJpegInfo(fixture('page-progressive.jpg')).baseline, false);
 });
 
-async function buildPdf() {
-  const pdf = new PDFWriter({ title: '生存遊戲 第01卷', author: '作者', rtl: true });
+async function buildPdf(opts = { title: '生存遊戲 第01卷', author: '作者', rtl: true }) {
+  const pdf = new PDFWriter(opts);
   for (const name of ['page-rgb.jpg', 'page-gray.jpg']) {
     const bytes = fixture(name);
     pdf.addJpegPage({ bytes, ...readJpegInfo(bytes) });
@@ -59,6 +59,12 @@ test('PDF 內容：頁數、色彩空間、右翻與中文書名', async () => {
   assert.match(text, /\/Direction \/R2L/);
   // UTF-16BE：「生」= U+751F
   assert.match(text, /\/Title <FEFF751F/);
+});
+
+test('PDF 資訊欄位寫入作者，沒有作者時省略', async () => {
+  // UTF-16BE：「作者」= U+4F5C U+8005
+  assert.match((await buildPdf()).toString('latin1'), /\/Author <FEFF4F5C8005>/);
+  assert.doesNotMatch((await buildPdf({ title: '書名' })).toString('latin1'), /\/Author/);
 });
 
 test('每頁高度一致，寬度依圖片比例', async () => {
