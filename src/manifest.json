@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "ComicClipper",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "批次下載漫畫網站的整冊圖片，每冊轉成一個 PDF，用 Send to Kindle 傳到 Kindle Scribe 閱讀。",
   "browser_specific_settings": {
     "gecko": {
@@ -25,9 +25,9 @@
     "default_title": "ComicClipper",
     "default_popup": "popup/popup.html",
     "default_icon": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
+      "16": "icons/comic16.png",
+      "48": "icons/comic48.png",
+      "128": "icons/comic128.png"
     }
   },
   "background": {
@@ -44,8 +44,8 @@
     ]
   },
   "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "16": "icons/comic16.png",
+    "48": "icons/comic48.png",
+    "128": "icons/comic128.png"
   }
 }
