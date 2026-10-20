@@ -8,7 +8,7 @@
 ## 🚀 安裝
 
 1. 開啟 `about:debugging#/runtime/this-firefox`
-2. 點「**載入暫用附加元件**」→ 選擇 `firefox-extension.zip`
+2. 點「**載入暫用附加元件**」→ 選擇 `firefox-extension-comic.zip`
 3. 更新版本時，把新的 zip 覆蓋到同一個位置，再按「**重新載入**」（先移除會清掉下載紀錄與設定）
 
 ---
@@ -88,7 +88,7 @@ PDF 每頁高度一致、沒有白邊，書名與作者會寫進 PDF 資訊欄�
 
 ```bash
 node --test 'test/*.test.js'   # 單元測試（範圍解析、檔名、JPEG 解析、PDF 結構、LZString、packer 還原）
-./build.sh                     # 把 src/ 打包成 firefox-extension.zip
+./build.sh                     # 把 src/ 打包成 firefox-extension-comic.zip
 ```
 
 ---
