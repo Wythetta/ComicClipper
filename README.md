@@ -65,7 +65,7 @@ PDF 每頁高度一致、沒有白邊，書名與作者會寫進 PDF 資訊欄�
 |---|---|
 | comic.acgn.cc（動漫戲說） | ✅ 可用（頁面結構參考 [ComicCrawler](https://github.com/eight04/ComicCrawler) 的 acgn 模組，MIT 授權） |
 | www／tw.manhuagui.com（漫畫櫃，含鏡像站 mhgui.com） | 🧪 已完成，待實測（解碼方式參考 [Mihon 擴充](https://github.com/keiyoushi/extensions-source) 的 manhuagui，Apache-2.0） |
-| www.dm5.com（動漫屋，含 tel／hk.dm5.com 與鏡像站 dm5.cn） | 🧪 已完成，待實測（作品頁依實際頁面；閱讀頁參考 Mihon 擴充與 ComicCrawler 的 dm5） |
+| www.dm5.com（動漫屋，含 tel／hk.dm5.com 與鏡像站 dm5.cn） | ✅ 可用（閱讀頁的抓法參考 [Mihon 擴充](https://github.com/keiyoushi/extensions-source) 的 dm5，Apache-2.0，與 ComicCrawler 的 dm5 模組，MIT 授權） |
 
 - **動漫戲說**：
   - 標題含「暫缺」的冊沒有內容，不會出現在清單中。
