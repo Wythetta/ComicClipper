@@ -7,6 +7,7 @@
 //   name:      'ACGN 漫畫',                  // 顯示名稱
 //   match(url)            → boolean          // 這個網址是否屬於此網站
 //   referer:   'https://…/',                 // 下載圖片時帶的 Referer（防盜連）
+//   imageReferer(volume) → string            // 選填：圖片要帶各冊自己的網址當 Referer 時使用，預設用 referer
 //   direction: 'rtl' | 'ltr',                // 預設翻頁方向，日漫為 rtl
 //   limits:    { concurrency, delayMs },     // 選填：網站會封鎖太快的請求時，限制同時下載數與間隔
 //
@@ -17,6 +18,7 @@
 //   async getPages(volume, ctx) → [圖片網址…] // 依頁序排列
 //     ctx.fetchDocument(url) → Document      // 會自動判斷 Big5／GBK 等編碼
 //     ctx.fetchText(url)     → string
+//     兩者都可以加 { referer } 改用別的 Referer，例如閱讀頁裡的 API 要帶該冊網址
 // }
 
 const ComicSites = {

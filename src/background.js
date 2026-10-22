@@ -87,13 +87,13 @@ function parseHtml(html, url) {
 /** 提供給網站規則使用的工具 */
 function makeSiteContext(site, signal) {
   return {
-    async fetchText(url) {
+    async fetchText(url, { referer = site.referer } = {}) {
       const { buffer, contentType } = await ComicUtil.withRetry(
-        () => fetchBuffer(url, { referer: site.referer, signal }), { retries: 2, signal });
+        () => fetchBuffer(url, { referer, signal }), { retries: 2, signal });
       return decodeHtml(buffer, contentType);
     },
-    async fetchDocument(url) {
-      return parseHtml(await this.fetchText(url), url);
+    async fetchDocument(url, options) {
+      return parseHtml(await this.fetchText(url, options), url);
     },
   };
 }
@@ -297,8 +297,10 @@ async function runJob(site, series, direction, settings, signal) {
     try {
       vol.status = 'listing';
       notify(true);
-      const urls = await site.getPages({ title: vol.title, url: vol.url }, ctx);
+      const volume = { title: vol.title, url: vol.url };
+      const urls = await site.getPages(volume, ctx);
       if (!urls?.length) throw new Error('閱讀頁找不到任何圖片');
+      const referer = site.imageReferer?.(volume) || site.referer;
 
       vol.total = urls.length;
       vol.status = 'downloading';
@@ -307,7 +309,7 @@ async function runJob(site, series, direction, settings, signal) {
         let buffer;
         try {
           ({ buffer } = await ComicUtil.withRetry(
-            () => fetchBuffer(imgUrl, { referer: site.referer, signal }), { retries: 3, signal }));
+            () => fetchBuffer(imgUrl, { referer, signal }), { retries: 3, signal }));
         } catch (e) {
           throw new Error(`第 ${i + 1} 頁下載失敗（${e.message}）`);
         }

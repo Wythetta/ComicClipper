@@ -65,6 +65,7 @@ PDF 每頁高度一致、沒有白邊，書名與作者會寫進 PDF 資訊欄�
 |---|---|
 | comic.acgn.cc（動漫戲說） | ✅ 可用（頁面結構參考 [ComicCrawler](https://github.com/eight04/ComicCrawler) 的 acgn 模組，MIT 授權） |
 | www／tw.manhuagui.com（漫畫櫃，含鏡像站 mhgui.com） | 🧪 已完成，待實測（解碼方式參考 [Mihon 擴充](https://github.com/keiyoushi/extensions-source) 的 manhuagui，Apache-2.0） |
+| www.dm5.com（動漫屋，含 tel／hk.dm5.com 與鏡像站 dm5.cn） | ✅ 可用（閱讀頁的抓法參考 [Mihon 擴充](https://github.com/keiyoushi/extensions-source) 的 dm5，Apache-2.0，與 ComicCrawler 的 dm5 模組，MIT 授權） |
 
 - **動漫戲說**：
   - 標題含「暫缺」的冊沒有內容，不會出現在清單中。
@@ -73,6 +74,11 @@ PDF 每頁高度一致、沒有白邊，書名與作者會寫進 PDF 資訊欄�
   - 圖片清單藏在壓縮過的程式碼裡，擴充功能直接解碼，不會執行網站的程式。
   - 網站會暫時封鎖下載太快的 IP，所以固定最多同時 2 張、每張間隔 0.6 秒。
   - 成人作品需要先在網站上任選一話打開、按下「已滿 18 歲」確認，才能下載。
+- **動漫屋**：
+  - 「连载」區同時有整卷（第N卷）和單話時，整卷會另外放在「单行本」分頁籤，方便只選整卷。
+  - 清單一律排成由舊到新；標題都有編號時依編號排，網站放錯位置的話也會歸位。
+  - 圖片網址是一頁一頁向網站要的（一次給兩頁），所以一冊開始下載前要等一下。
+  - 付費或 VIP 的話會標示失敗並顯示網站的說明，其他冊照常下載；手機版 m.dm5.com 不支援，請用電腦版網頁。
 
 ### 新增網站
 
@@ -80,7 +86,7 @@ PDF 每頁高度一致、沒有白邊，書名與作者會寫進 PDF 資訊欄�
 
 - `parseSeries(doc, url)`：從作品頁取出書名、作者、封面與冊數清單
 - `getPages(volume, ctx)`：取出一冊所有圖片的網址（`ctx.fetchDocument` 會自動處理 Big5／GBK 編碼）
-- 選填：冊數加上 `group` 會分頁籤顯示；`limits` 可限制同時下載數與間隔
+- 選填：冊數加上 `group` 會分頁籤顯示；`limits` 可限制同時下載數與間隔；`imageReferer(volume)` 讓圖片帶各冊自己的網址當 Referer
 - 共用工具：`LZString.decompressFromBase64`、`Unpacker.unpack`（還原 packer 壓縮的程式碼，不執行它）
 
 寫好後把檔案加進 `src/manifest.json` 的 `background.scripts`。
